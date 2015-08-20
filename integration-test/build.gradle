@@ -1,0 +1,22 @@
+buildscript {
+  repositories {
+    mavenLocal()
+  }
+  dependencies {
+    classpath 'com.spindrift.gradle-weblogic-plugin:weblogic-plugin:0.1.0-SNAPSHOT'
+  }
+}
+
+apply plugin: 'weblogic-plugin'
+
+import com.spindrift.gradle.weblogic.tasks.CleanDomain
+
+//Property configuration
+
+//Task configuration
+
+task cleanBaseDomain(type: CleanDomain) {
+  doLast {
+    println "Cleaning base domain ..."
+  }
+}

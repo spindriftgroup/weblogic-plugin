@@ -26,6 +26,12 @@ dependencies {
 //  testCompile('org.spockframework:spock-core:0.7-groovy-2.0') {
 //    exclude group: 'org.codehaus.groovy'
 //  }
+  // mandatory dependencies for using Spock
+  testCompile "org.codehaus.groovy:groovy-all:2.3"
+  testCompile "org.spockframework:spock-core:1.0-groovy-2.3"
+  
+  //For gradle functional testing
+  testCompile gradleTestKit()
 }
 
 //Set the default build and version properties
@@ -56,6 +62,14 @@ defaultTasks 'install'
 
 //Always clean eclipse
 tasks.eclipse.dependsOn cleanEclipse
+
+//For integration testing
+task integrationTest(type: GradleBuild) {
+  description="Runs plugin integration test"
+  group="Verification"
+  dir = 'integration-test'
+  tasks = ['tasks','cleanDomain','cleanBaseDomain']
+}
 
 // Add the wrapper task to enable auto-install of the configured version via ./gradlew
 task wrapper(type: Wrapper) {

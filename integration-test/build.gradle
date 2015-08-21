@@ -20,3 +20,90 @@ task cleanBaseDomain(type: CleanDomain) {
     println "Cleaning base domain ..."
   }
 }
+
+weblogic {
+  domains {
+    domain {
+      name='base'
+      isDefault=false
+    }
+    domain {
+      name='atg'
+      isDefault=true
+      servers {
+        server {
+          name='adminServer'
+          listenPort='7001'
+        }
+      }
+      dataSources {
+        dataSource {
+          name='ca'
+          user='ca'
+          target='AdminServer'
+          appDeployment {
+            name='ATGPublishing'
+            cacheInAppDirectory=false
+            deploymentOrder=100
+            securityDDModel='DDOnly'
+            sourcePath=''
+            target='AdminServer'
+            validateDDSecurityData=false
+          }
+          jta {
+            timeoutSeconds=600
+          }
+          jdbcDriverParams {
+            driverName='oracle.jdbc.xa.client.OracleXADataSource'
+            passwordEncrypted='ca'
+            url='jdbc:oracle:thin:@localhost:1521:xe'
+          }
+          jdbcConnectionPoolParams {
+            testTableName='SQL SELECT 1 FROM DUAL'
+            maxCapacity=30
+          }
+          jdbcDataSourceParams {
+            jndiName='ATGPublishingDS'
+          }
+        }
+        dataSource {
+          name='live'
+          user='live'
+          target='AdminServer'
+          appDeployment {
+            name='ATGStorefront'
+            cacheInAppDirectory=false
+            deploymentOrder=100
+            securityDDModel='DDOnly'
+            sourcePath=''
+            target='AdminServer'
+            validateDDSecurityData=false
+          }
+          jta {
+            timeoutSeconds=600
+          }
+          jdbcDriverParams {
+            driverName='oracle.jdbc.xa.client.OracleXADataSource'
+            passwordEncrypted='live'
+            url='jdbc:oracle:thin:@localhost:1521:xe'
+          }
+          jdbcConnectionPoolParams {
+            testTableName='SQL SELECT 1 FROM DUAL'
+            maxCapacity=30
+          }
+          jdbcDataSourceParams {
+            jndiName='ATGStorefrontDS'
+          }
+        }
+
+      }
+    }
+    domain {
+      name='another'
+    }
+  }
+}
+
+weblogic.domains.each { domain ->
+  println domain
+}

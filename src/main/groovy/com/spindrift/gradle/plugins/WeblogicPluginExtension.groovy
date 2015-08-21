@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.spindrift.gradle.weblogic
+package com.spindrift.gradle.plugins
 
 import groovy.lang.Closure;
 
+import org.gradle.api.GradleException
 import org.gradle.util.ConfigureUtil
+
+import com.spindrift.gradle.config.weblogic.Domain
 
 class WeblogicPluginExtension {
   
@@ -69,6 +72,36 @@ class WeblogicPluginExtension {
   String commonBinDir="${home}/common/bin"
   def commonBinDir(String commonBinDir) {
     this.commonBinDir = commonBinDir
+  }
+  
+  /** Defines the domains **/ 
+  List<Domain> domains = []
+  def domains(Closure closure) {
+    ConfigureUtil.configure(closure, domains)
+  }
+  
+  def domain(Closure closure) {
+    closure.resolveStrategy = Closure.DELEGATE_FIRST
+    Domain domain = new Domain()
+    closure.delegate = domain
+    domains << domain
+    closure()
+  }
+  
+
+  /** Extension helper methods **/
+  
+  /** Finds the default domain **/
+  Domain findDefaultDomain() {
+    List<Domain> defaultDomains = []
+    defaultDomains = domains.findAll { d -> d.isDefault }
+    if (defaultDomains.size() == 0) {
+      throw new GradleException("No default domain configured")
+    }
+    if (defaultDomains.size() > 1) {
+      throw new GradleException("More than 1 default domain configured. Ensure only one domain is configured as default")
+    }
+    return defaultDomains.first()
   }
   
   
